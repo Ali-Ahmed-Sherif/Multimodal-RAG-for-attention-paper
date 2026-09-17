@@ -12,7 +12,12 @@ point, and no API key exists anywhere in this repository.
 Question ──▶ guard rails ──▶ hybrid retrieval ──▶ vision grounding ──▶ generation ──▶ cited answer
 ```
 
-**ITI Level 2 AI — Graduation Project · Extended Track**
+![The running application](docs/screenshot-app.png)
+
+*Answering a question about multi-head attention. The panel on the right is not decoration:
+Figure 2 was retrieved as one of the top-4 chunks, so the vision model re-read the actual image
+before the answer was generated, and the figure it cited is rendered alongside. Text-only answers
+return no images and the panel stays hidden.*
 
 ---
 
@@ -52,13 +57,6 @@ to handle**:
 | Attention visualisations | 3 (vector-drawn) | `get_images()` finds nothing; must be rendered from the page |
 
 A larger corpus of uniform prose would have been easier and would have demonstrated less.
-
-### On the absence of YOLO
-
-The Extended Track suggests a YOLO/object-detection component. **This project does not use
-YOLO**, deliberately. There are no discrete objects in photographs here — the images are
-schematic diagrams and data visualisations, which is not what an object detector is for.
-Bolting one on would have produced a component that detects nothing meaningful.
 
 The multimodal requirement is instead met by a **vision-language model** that reads and grounds
 the diagrams. This is a substitution of technique, not a reduction in scope: the vision model is
@@ -399,7 +397,9 @@ frontend/
 
 A `gr.Blocks` application rather than `gr.ChatInterface`, for layout control: chat on the left,
 a gallery of cited figures with captions on the right that appears only when figures were
-actually retrieved, a light/dark toggle, and example questions.
+actually retrieved, a light/dark toggle, and example questions. See the
+[screenshot above](#multimodal-rag-assistant--attention-is-all-you-need) for the running UI in
+dark mode.
 
 Two implementation notes:
 
