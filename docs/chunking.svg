@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 628" width="1000" height="628" role="img" aria-label="Chunking strategy by content type">
+<defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+  </marker>
+</defs>
+<text x="28" y="34" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#1e293b">One document, four content types, four chunking rules</text>
+<text x="28" y="56" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#64748b">Chunk size is an output of document structure, not a tuned parameter. Overlap is zero by design.</text>
+<rect x="28" y="84" width="944" height="104" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.8"/>
+<rect x="28" y="84" width="6" height="104" rx="3" fill="#6366f1"/>
+<text x="52" y="112" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#1e293b">PROSE  ·  23 chunks</text>
+<text x="52" y="134" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#6366f1">Font-based section detection</text>
+<text x="52" y="154" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">Headers render in NimbusRomNo9L-Medi,</text>
+<text x="52" y="169" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">a weight body text never uses.</text>
+<text x="52" y="184" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">One chunk per subsection, 9-490 words.</text>
+<rect x="28" y="202" width="944" height="104" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="1.8"/>
+<rect x="28" y="202" width="6" height="104" rx="3" fill="#10b981"/>
+<text x="52" y="230" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#1e293b">TABLES  ·  4 chunks</text>
+<text x="52" y="252" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#10b981">Caption + lead-in + markdown</text>
+<text x="52" y="272" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">A table is one argument; splitting it</text>
+<text x="52" y="287" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">destroys the comparison it exists to make.</text>
+<text x="52" y="302" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">Hand-verified y-bounds per table.</text>
+<rect x="28" y="320" width="944" height="104" rx="12" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.8"/>
+<rect x="28" y="320" width="6" height="104" rx="3" fill="#f59e0b"/>
+<text x="52" y="348" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#1e293b">DIAGRAMS  ·  2 chunks</text>
+<text x="52" y="370" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#f59e0b">Rendered, then read by the VLM</text>
+<text x="52" y="390" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">Raster figures cropped at ~216 dpi.</text>
+<text x="52" y="405" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">gemma3:4b writes a structural description</text>
+<text x="52" y="420" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">that is indexed alongside the caption.</text>
+<rect x="28" y="438" width="944" height="104" rx="12" fill="#fff1f2" stroke="#f43f5e" stroke-width="1.8"/>
+<rect x="28" y="438" width="6" height="104" rx="3" fill="#f43f5e"/>
+<text x="52" y="466" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="700" fill="#1e293b">ATTENTION VIZ  ·  3 chunks</text>
+<text x="52" y="488" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#f43f5e">Paper's own caption is indexed</text>
+<text x="52" y="508" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">Vector-drawn: get_images() finds nothing,</text>
+<text x="52" y="523" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">so the page region is rendered instead.</text>
+<text x="52" y="538" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">VLM measured unreliable here - see README.</text>
+<text x="500" y="582" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" fill="#1e293b">All four converge on one schema:</text>
+<text x="500" y="604" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace" font-size="11" font-weight="400" fill="#64748b">{ id, text, metadata: { modality, section, page, image_path } }</text>
+</svg>

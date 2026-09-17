@@ -1,0 +1,15 @@
+{
+  "embedding_model": "nomic-embed-text",
+  "embedding_dim": 768,
+  "document_prefix": "search_document: ",
+  "query_prefix": "search_query: ",
+  "vlm_model": "gemma3:4b",
+  "llm_model": "llama3.2:1b",
+  "collection_name": "attention_paper",
+  "distance_metric": "cosine",
+  "chunking_strategy": "section-based, modality-specific, no overlap",
+  "chunk_count": 32,
+  "top_k": 4,
+  "rrf_k": 60,
+  "scope_distance_threshold": 0.4
+}

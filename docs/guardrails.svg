@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 366" width="1120" height="366" role="img" aria-label="Three-layer guard rails in front of the RAG pipeline">
+<defs>
+  <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+  </marker>
+</defs>
+<text x="28" y="34" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="15" font-weight="700" fill="#1e293b">Guard rails: not every input deserves a pipeline</text>
+<text x="28" y="56" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="11.5" font-weight="400" fill="#64748b">Before this, a bare "who are you?" retrieved two figures, called the vision model twice, and answered wrongly.</text>
+<rect x="36" y="92" width="268" height="130" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.8"/>
+<circle cx="64" cy="120" r="15" fill="#6366f1"/>
+<text x="64" y="125" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#ffffff">1</text>
+<text x="90" y="125" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#1e293b">Exact rules</text>
+<text x="90" y="145" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#6366f1">~4 ms  ·  zero model calls</text>
+<text x="58" y="176" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="700" fill="#64748b">catches</text>
+<text x="58" y="194" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" font-weight="400" fill="#1e293b">hi · thanks · who are you?</text>
+<text x="58" y="212" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="400" fill="#64748b">no retrieval, no LLM, no VLM</text>
+<line x1="304" y1="157" x2="336" y2="157" stroke="#64748b" stroke-width="1.8" marker-end="url(#ah)"/>
+<text x="320.0" y="151.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10" fill="#64748b">miss</text>
+<rect x="336" y="92" width="268" height="130" rx="12" fill="#f5f3ff" stroke="#8b5cf6" stroke-width="1.8"/>
+<circle cx="364" cy="120" r="15" fill="#8b5cf6"/>
+<text x="364" y="125" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#ffffff">2</text>
+<text x="390" y="125" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#1e293b">LLM classifier</text>
+<text x="390" y="145" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#8b5cf6">~100 ms  ·  constrained JSON, temp 0</text>
+<text x="358" y="176" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="700" fill="#64748b">catches</text>
+<text x="358" y="194" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" font-weight="400" fill="#1e293b">hiiii · wasssuppp · heyyy there</text>
+<text x="358" y="212" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="400" fill="#64748b">no retrieval, no LLM, no VLM</text>
+<line x1="604" y1="157" x2="636" y2="157" stroke="#64748b" stroke-width="1.8" marker-end="url(#ah)"/>
+<text x="620.0" y="151.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10" fill="#64748b">miss</text>
+<rect x="636" y="92" width="268" height="130" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="1.8"/>
+<circle cx="664" cy="120" r="15" fill="#10b981"/>
+<text x="664" y="125" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="14" font-weight="700" fill="#ffffff">3</text>
+<text x="690" y="125" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#1e293b">Distance threshold</text>
+<text x="690" y="145" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#10b981">~120 ms  ·  cosine vs 0.40</text>
+<text x="658" y="176" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="700" fill="#64748b">catches</text>
+<text x="658" y="194" text-anchor="start" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace" font-size="10.5" font-weight="400" fill="#1e293b">tell me a joke · capital of France</text>
+<text x="658" y="212" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="9.5" font-weight="400" fill="#64748b">rejected before generation</text>
+<line x1="904" y1="157" x2="936" y2="157" stroke="#64748b" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="936" y="128" width="150" height="58" rx="10" fill="#f1f5f9" stroke="#475569" stroke-width="1.8"/>
+<text x="1011.0" y="151.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12.5" font-weight="600" fill="#1e293b">Full RAG</text>
+<text x="1011.0" y="169.0" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" fill="#64748b">retrieve + generate</text>
+<rect x="36" y="250" width="1050" height="92" rx="12" fill="#f8fafc" stroke="#64748b" stroke-width="1.4"/>
+<text x="60" y="276" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="12" font-weight="700" fill="#1e293b">Why the LLM only gets three labels</text>
+<text x="60" y="298" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">A four-label version that also asked the model whether a question was about the paper scored 48-58%, and mislabelled</text>
+<text x="60" y="314" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">nine genuine paper questions as off-topic - it would have refused real questions. Judging topicality needs the corpus,</text>
+<text x="60" y="330" text-anchor="start" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" font-size="10.5" font-weight="400" fill="#64748b">which a 1B model lacks. Splitting it - LLM for surface intent, embedding distance for topicality - scored 89%.</text>
+</svg>

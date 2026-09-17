@@ -1,0 +1,246 @@
+[
+  {
+    "question": "I keep hearing self-attention beats RNNs because of path length. What is the maximum path length for a restricted self-attention layer versus a recurrent one?",
+    "expected_source": "Table 1",
+    "retrieved": [
+      "4",
+      "Table 1",
+      "2",
+      "3.1"
+    ],
+    "retrieval_hit": true,
+    "answer": "The maximum path length for a restricted self-attention layer is O(r \u00b7 n \u00b7 d), whereas for a recurrent layer it is O(n/r).",
+    "elapsed": 0.5872042179107666,
+    "images": []
+  },
+  {
+    "question": "How does the big Transformer's BLEU on English-to-French compare to the ConvS2S Ensemble, and is it actually cheaper to train?",
+    "expected_source": "Table 2",
+    "retrieved": [
+      "Table 2",
+      "6.1",
+      "Abstract",
+      "7"
+    ],
+    "retrieval_hit": true,
+    "answer": "The question about the big Transformer's BLEU on English-to-French is outside what I can answer from the paper, as the paper primarily discusses the Transformer's performance on the WMT 2014 English-to-German and English-to-French translation tasks and its improvements over previous state-of-the-art models.\n\nHowever, I can provide some information on the Transformer's performance on the WMT 2014 English-to-French task. According to the paper, the big Transformer model achieves a BLEU score of 41.0 on this task, which is the best previously reported result. This suggests that the big Transformer model outperforms the ConvS2S Ensemble on this task.\n\nRegarding the cost of training, the paper does not provide a direct comparison between the big Transformer model and the ConvS2S Ensemble in terms of training time. However, it does mention that the big Transformer model trains for 3.5 days on 8 P100 GPUs, while the ConvS2S Ensemble trains for a fraction of the time, with an estimated training time of around 10 minutes per epoch. This implies that the big Transformer model is significantly cheaper to train.\n\nIt's also worth noting that the paper mentions that the big Transformer model is not just cheaper to train, but also faster, with an estimated training time that is a small fraction of the training time of the best models from the literature. This suggests that the big Transformer model is a good choice for translation tasks, where speed and efficiency are important.",
+    "elapsed": 2.461686372756958,
+    "images": []
+  },
+  {
+    "question": "If you cut the model down to a single attention head instead of multi-head, how much worse does BLEU get compared to the base model?",
+    "expected_source": "Table 3",
+    "retrieved": [
+      "6.2",
+      "3.2.2",
+      "Figure 2",
+      "2"
+    ],
+    "retrieval_hit": false,
+    "answer": "Based on the provided context, it is mentioned in Section 3.2.2 of the paper \"Attention Is All You Need\" that if you eliminate the multiple heads from the Transformer model, you would lose the ability to capture diverse relationships within the data, leading to a substantial decrease in performance.\n\nTo answer your question, when you cut the model down to a single attention head instead of multi-head, you would likely see a significant decrease in BLEU score compared to the base model.",
+    "elapsed": 4.206566095352173,
+    "images": [
+      "data/processed/images/figure2.png"
+    ]
+  },
+  {
+    "question": "What's the difference in perplexity, BLEU and parameter count between the base config and the big one?",
+    "expected_source": "Table 3",
+    "retrieved": [
+      "5.4",
+      "Table 2",
+      "6.1",
+      "Table 3"
+    ],
+    "retrieval_hit": true,
+    "answer": "Based on the provided context, it appears that the base and big transformer models have the following differences in perplexity, BLEU, and parameter count:\n\n- Perplexity: The big model has a perplexity of 28.4, while the base model has a perplexity of 100K. However, the base model is estimated to use 65 times more training steps than the big model (4.92 \u00d7 65 vs. 5.00), but this is not directly comparable to perplexity. (Source: Table 3)\n- BLEU: The big model achieves a BLEU score of 28.4, while the base model achieves a BLEU score of 100K. (Source: Table 2)\n- Parameter count: The base model uses 100K parameters, while the big model uses 300K parameters. (Source: Table 3)\n\nThese differences suggest that the big model has a higher parameter count and likely requires more training data to achieve similar performance to the base model.",
+    "elapsed": 1.8353731632232666,
+    "images": []
+  },
+  {
+    "question": "For constituency parsing, how does the semi-supervised 4-layer Transformer's F1 compare to the Dyer et al. 2016 generative model?",
+    "expected_source": "Table 4",
+    "retrieved": [
+      "Table 4",
+      "6.3",
+      "Abstract",
+      "6.1"
+    ],
+    "retrieval_hit": true,
+    "answer": "The semi-supervised 4-layer Transformer's F1 score for English constituency parsing is 92.1, while the Dyer et al. 2016 generative model's F1 score is 91.7.",
+    "elapsed": 0.6795485019683838,
+    "images": []
+  },
+  {
+    "question": "I'm lost on how the encoder and decoder stacks actually connect to each other. Can you walk me through the data flow?",
+    "expected_source": "Figure 1",
+    "retrieved": [
+      "3.1",
+      "3.2.3",
+      "3.5",
+      "Figure 1"
+    ],
+    "retrieval_hit": true,
+    "answer": "The encoder and decoder stacks in the Transformer model are connected through a process called attention. Here's a simplified overview of how it works:\n\n**Encoder-Decoder Attention**\n\nThe encoder and decoder stacks are identical, consisting of six layers each. Each layer has two sub-layers: a multi-head self-attention mechanism and a simple, position-wise fully connected feed-forward network.\n\n**Encoder**\n\n1. The encoder inputs are first transformed into embedding vectors using an \"Input Embedding\".\n2. The positional encoding vector is added to the input embeddings, providing information about the position of each element in the sequence.\n3. The output embeddings are transformed into an output embedding vector using a positional encoding vector.\n4. Each layer in the encoder stack has two sub-layers:\n\t* An \"Add & Norm\" layer, which adds the output of the previous layer and normalizes the input.\n\t* A \"Feed Forward\" layer, which applies a fully connected feed-forward network to the input.\n5. The output of the feed forward layer is then added to the input of the next layer and normalized.\n\n**Decoder**\n\n1. The decoder inputs are identical to the encoder inputs.\n2. The positional encoding vector is added to the input embeddings, providing information about the position of each element in the sequence.\n3. The output embeddings are transformed into an output embedding vector using a positional encoding vector.\n4. Each layer in the decoder stack has two sub-layers:\n\t* A \"Add & Norm\" layer, which adds the output of the previous layer and normalizes the input.\n\t* A \"Masked Multi-Head Attention\" layer, which masks attention scores between the input vectors and their past values.\n5. The output of the masked multi-head attention layer is linearly transformed to produce a vector of size N.\n\n**Connection between Encoder and Decoder**\n\nThe connection between the encoder and decoder stacks is established through the use of residual connections. Residual connections are added around each sub-layer in the encoder and decoder stacks, followed by layer normalization. This allows the model to capture the residual information between the previous and current layers.\n\nThe residual connections are used to prevent the attention mechanism from attending to future positions in the sequence, which is crucial for auto-regressive models like Transformers. By masking the attention mechanism to only attend to past positions, the model can learn to focus on the most relevant information in the sequence.\n\n**Final Output**\n\nThe output of the last layer in the encoder stack is then passed through a linear layer to produce a vector of size N. This vector is then passed through a softmax function to produce output probabilities.",
+    "elapsed": 7.322038888931274,
+    "images": [
+      "data/processed/images/figure1.png"
+    ]
+  },
+  {
+    "question": "How does Scaled Dot-Product Attention feed into Multi-Head Attention, step by step?",
+    "expected_source": "Figure 2",
+    "retrieved": [
+      "Figure 2",
+      "3.2.1",
+      "3.2",
+      "3.2.2"
+    ],
+    "retrieval_hit": true,
+    "answer": "Based on the provided context, here's a step-by-step breakdown of how Scaled Dot-Product Attention feeds into Multi-Head Attention:\n\n1. **Linear transformations**: Scaled Dot-Product Attention applies three linear transformations to the input vectors Q, K, and V, creating three different heads of representation.\n\n2. **Concatenation**: The outputs from the three linear layers (Q, K, V) are then concatenated together.\n\n3. **Scaled Dot-Product Attention**: The concatenated vector is then fed into the Scaled Dot-Product Attention block.\n\n4. **Linear layer (x1)**: The output from the Scaled Dot-Product Attention block is then processed by a final linear layer, also labeled as \"Linear\".\n\n5. **Output**: The final output of the Multi-Head Attention block is a single output vector, labeled as \"h\".\n\nIn terms of the diagram, the Scaled Dot-Product Attention block is depicted as the \"Scaled Dot-Product Attention\" (Figure 2) block, which is shown in the top-left corner of the diagram. The Multi-Head Attention block is depicted as a series of \"Scaled Dot-Product Attention\" blocks, where each block is shown in the bottom-right corner of the diagram.",
+    "elapsed": 5.084455728530884,
+    "images": [
+      "data/processed/images/figure2.png"
+    ]
+  },
+  {
+    "question": "There's a figure with an attention visualisation for a long sentence about government laws - what long-distance dependency is it illustrating?",
+    "expected_source": "Figure 3",
+    "retrieved": [
+      "Figure 3",
+      "4",
+      "2",
+      "1"
+    ],
+    "retrieval_hit": true,
+    "answer": "Based on the provided context, the long-distance dependency being illustrated is the relationship between the verb \"making\" and the word \"more difficult\" in the sentence \"making...more difficult\".",
+    "elapsed": 3.2321627140045166,
+    "images": [
+      "data/processed/images/figure3.png"
+    ]
+  },
+  {
+    "question": "One of the attention figures is about a word referring back to something earlier in the sentence. What phenomenon is that, and which word is shown?",
+    "expected_source": "Figure 4",
+    "retrieved": [
+      "Figure 3",
+      "4",
+      "2",
+      "Figure 2"
+    ],
+    "retrieval_hit": false,
+    "answer": "The phenomenon depicted in the attention figure, where a word attends to something earlier in the sentence, is long-distance dependencies. Specifically, the word \"making\" is shown attending to something earlier in the phrase \"making...more difficult.\"",
+    "elapsed": 6.418097734451294,
+    "images": [
+      "data/processed/images/figure3.png",
+      "data/processed/images/figure2.png"
+    ]
+  },
+  {
+    "question": "What's the point of the figure showing two different attention heads on the same sentence?",
+    "expected_source": "Figure 5",
+    "retrieved": [
+      "Figure 5",
+      "Figure 3",
+      "Figure 2",
+      "Figure 4"
+    ],
+    "retrieval_hit": true,
+    "answer": "The point of the figure is to illustrate how two attention heads, both in layer 5 of the Transformer model, process different parts of a sentence simultaneously to understand anaphora (the relationship between words in close proximity). The figure demonstrates how the model's attention mechanism can capture various aspects of relationships within a sentence, such as referring to a specific noun (\"its\") in the phrase \"making...more difficult.\"",
+    "elapsed": 12.056228637695312,
+    "images": [
+      "data/processed/images/figure5.png",
+      "data/processed/images/figure3.png",
+      "data/processed/images/figure2.png",
+      "data/processed/images/figure4.png"
+    ]
+  },
+  {
+    "question": "According to the abstract, what BLEU did they get on English-to-German, and how long did training take?",
+    "expected_source": "Abstract",
+    "retrieved": [
+      "6.1",
+      "Table 2",
+      "Abstract",
+      "6.2"
+    ],
+    "retrieval_hit": true,
+    "answer": "According to the abstract, the Transformer model achieved a BLEU score of 28.4 on the WMT 2014 English-to-German translation task, outperforming the best previously reported models (including ensembles) by more than 2.0 BLEU.",
+    "elapsed": 0.7469196319580078,
+    "images": []
+  },
+  {
+    "question": "What is scaled dot-product attention, and why divide by the square root of d_k instead of using the raw dot product?",
+    "expected_source": "3.2.1",
+    "retrieved": [
+      "3.2.1",
+      "Figure 2",
+      "3.2",
+      "3.2.2"
+    ],
+    "retrieval_hit": true,
+    "answer": "Scaled dot-product attention is a type of attention mechanism used in neural networks to focus on specific parts of the input data. It is designed to improve the performance of the model by selectively attending to certain components of the input, rather than processing the entire input at once.\n\nThe reason for dividing the dot product by the square root of d_k instead of using the raw dot product lies in the relationship between the dot product and the gradients of the loss function during backpropagation.\n\nWhen the dot product is computed directly, the gradients of the loss function are sensitive to the large values of the dot product. In particular, the gradients are small when the dot product is large, which can lead to very small gradients during backpropagation, making it difficult for the model to learn effectively.\n\nOn the other hand, when the dot product is divided by the square root of d_k, the resulting weights are much smaller when the dot product is large. This is because the denominator is proportional to the square root of d_k, which increases the weights as the dot product increases. As a result, the gradients of the loss function are large when the dot product is large, which can help the model to learn more effectively.\n\nIn other words, dividing the dot product by the square root of d_k helps to \"scale down\" the gradients, making it easier for the model to learn from the input data. This is why it is common to use dot-product attention instead of raw dot-product attention in many neural network architectures.",
+    "elapsed": 5.859130144119263,
+    "images": [
+      "data/processed/images/figure2.png"
+    ]
+  },
+  {
+    "question": "Why bother with multiple attention heads instead of one big attention function?",
+    "expected_source": "3.2.2",
+    "retrieved": [
+      "3.2.2",
+      "Figure 2",
+      "4",
+      "3.2"
+    ],
+    "retrieval_hit": true,
+    "answer": "The paper \"Attention Is All You Need\" proposes the use of multiple attention heads in the context of neural machine translation, where a single attention function would average information from different representation subspaces at different positions. This averaging effect can inhibit the model's ability to capture nuanced dependencies and long-range patterns in the input data.\n\nBy employing multiple attention heads, each with its own linear projection, the model can jointly attend to information from different representation subspaces at different positions. This allows the model to capture a richer representation of the input data, enabling it to perform tasks that require nuanced understanding and context, such as language modeling, question answering, and text summarization.\n\nFurthermore, the use of multiple attention heads can help the model to learn long-range dependencies by allowing it to attend to different parts of the input data simultaneously. This is particularly important in sequence-to-sequence tasks, where the model needs to understand the context of the input sequence to generate coherent output.\n\nOverall, the paper argues that multiple attention heads offer a more effective and efficient way to model complex relationships in the input data compared to a single big attention function.",
+    "elapsed": 4.9587624073028564,
+    "images": [
+      "data/processed/images/figure2.png"
+    ]
+  },
+  {
+    "question": "Since the Transformer has no recurrence or convolution, how does it know the order of the words?",
+    "expected_source": "3.5",
+    "retrieved": [
+      "2",
+      "1",
+      "Abstract",
+      "7"
+    ],
+    "retrieval_hit": false,
+    "answer": "Since the Transformer uses self-attention to compute representations of its input and output, it can still learn the order of the words in the input sequence. Attention mechanisms allow the model to weigh the importance of different positions in the input sequence and compute representations based on those weights, even if the model is not explicitly computing word order. This is because attention is typically applied to sequential data, and the Transformer uses its self-attention mechanism to compute representations of the input sequence, including the order of the words.",
+    "elapsed": 1.0406537055969238,
+    "images": []
+  },
+  {
+    "question": "What optimizer did they use, and was the learning rate fixed or scheduled?",
+    "expected_source": null,
+    "retrieved": [
+      "5.3",
+      "5.2",
+      "5.4",
+      "2"
+    ],
+    "retrieval_hit": null,
+    "answer": "According to the provided context, the optimizer used was Adam with the specified hyperparameters: \u03b21 = 0.9, \u03b22 = 0.98, and \u03b5 = 10-9. The learning rate was not explicitly fixed or scheduled, but it was adjusted based on the step number.\n\nHowever, the context does not provide sufficient information to answer the second part of the question, which is about the learning rate.",
+    "elapsed": 0.9060609340667725,
+    "images": []
+  },
+  {
+    "question": "In the conclusion, what do the authors say are the main advantages over recurrent and convolutional models?",
+    "expected_source": "7",
+    "retrieved": [
+      "2",
+      "4",
+      "7",
+      "Abstract"
+    ],
+    "retrieval_hit": true,
+    "answer": "The authors highlight several advantages of the Transformer model over recurrent and convolutional models. These include:\n\n* Reduced computational complexity: The authors note that self-attention layers are faster than recurrent layers when the sequence length is smaller than the representation dimensionality, making them more efficient for tasks involving very long sequences.\n* Increased parallelizability: By replacing recurrence and convolution with self-attention, the authors claim that the Transformer can perform tasks more quickly and with less computational overhead.\n* Improved interpretability: The authors suggest that self-attention could yield more interpretable models, as individual attention heads can learn to perform different tasks and exhibit behavior related to the syntactic and semantic structure of sentences.\n* Potential for more generalizable models: By not requiring a fixed encoding or decoding process, the authors propose that the Transformer could generalize well to other tasks and modalities, such as images, audio, and video.\n\nThese advantages are emphasized in the conclusion, where the authors state that the Transformer is a \"simple network architecture that can outperform complex models based on recurrent or convolutional neural networks\" and \"has the potential to be applied to other tasks and modalities.\"",
+    "elapsed": 1.8547148704528809,
+    "images": []
+  }
+]
