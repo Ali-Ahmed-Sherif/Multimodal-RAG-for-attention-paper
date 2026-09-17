@@ -1,0 +1,32 @@
+# Phase 2.6 — Evaluation Results
+
+16 test questions run end-to-end through the hybrid retrieval + query-time VLM grounding + `llama3.2:1b` generation pipeline (`notebooks/exploration/run_test_queries.py`). Full per-case trace: `data/processed/eval_trace.json` / `eval_trace_console.txt`.
+
+| # | Question | Retrieved source(s) (top-4) | Relevant? | Answer (truncated) | Grounded? |
+|---|---|---|---|---|---|
+| 1 | I keep hearing that self-attention is better than RNNs because of path... | 4, Table 1, 2, 3.1 | Yes | The maximum path length between any two input and output positions in a network composed of a self-attention l... | Yes |
+| 2 | How does the big Transformer model's BLEU score on English-to-French c... | Table 2, 6.1, Abstract, 7 | Yes | The big Transformer model's BLEU score on English-to-French is 41.8, which is significantly better than the Co... | Yes |
+| 3 | If you cut the model down to just a single attention head instead of t... | 6.2, 3.2.2, Figure 2, 6.1 | **No** | Based on the provided context, the base model uses a multi-head setup with 8 attention heads, each projecting ... | **No (wrong source)** |
+| 4 | What's the actual difference in perplexity, BLEU, and parameter count ... | 6.1, Table 3, Table 2, 6.3 | Yes | The base Transformer model (d_model = 512, d_ff = 2048) and the big Transformer model (d_model = 1024, d_ff = ... | Yes |
+| 5 | For the constituency parsing experiment, how does the semi-supervised ... | Table 4, 6.3, Abstract, Table 3 | Yes | The semi-supervised 4-layer Transformer's F1 score in the constituency parsing experiment is significantly bet... | Yes |
+| 6 | I'm looking at the overall architecture diagram and I'm a bit lost on ... | Figure 1, 3.1, Figure 2, 3 | Yes | The diagram illustrates the top-to-bottom flow of data through the Transformer architecture. Here's a breakdow... | Yes |
+| 7 | Can you explain how Scaled Dot-Product Attention feeds into Multi-Head... | Figure 2, 3.2.1, 3.2, 3.2.2 | Yes | Here's a step-by-step explanation of how Scaled Dot-Product Attention feeds into Multi-Head Attention based on... | Yes |
+| 8 | There's a figure showing an attention visualization for a long sentenc... | Figure 3, 4, 2, 1 | Yes | The figure [Figure 3] (figure_attnviz, page 13) illustrates an attention mechanism following long-distance dep... | Yes |
+| 9 | One of the attention figures seems to be about a word referring back t... | Figure 3, 4, 2, Figure 5 | **No** | The attention figure appears to illustrate a linguistic phenomenon called "long-distance dependencies" in the ... | **No (wrong source)** |
+| 10 | What's the point of the figure that shows two different attention head... | Figure 5, Figure 4, Figure 3, 4 | Yes | According to the context, the figure illustrates how two attention heads within the Transformer model are simu... | Yes |
+| 11 | According to the abstract, what BLEU score did they get on English-to-... | 6.1, Abstract, Table 2, 7 | Yes | According to the abstract, the Transformer (big) model achieved a BLEU score of 28.4 on the English-to-German ... | Yes |
+| 12 | Can you explain what scaled dot-product attention actually is, and why... | 3.2.1, Figure 2, 3.2, 3.2.2 | Yes | Scaled dot-product attention is a type of attention mechanism used in neural networks to selectively focus on ... | Yes |
+| 13 | Why did they bother with multiple attention heads instead of just usin... | 3.2.2, Figure 2, 4, Figure 4 | Yes | The authors of the paper "Attention Is All You Need" implemented multiple attention heads to capture different... | Yes |
+| 14 | Since the Transformer has no recurrence or convolution at all, how doe... | 2, 1, 7, Abstract | **No** | Since the Transformer doesn't rely on sequence-aligned recurrence or convolution, it doesn't use traditional s... | **No (wrong source)** |
+| 15 | What optimizer did they use to train the model, and did they use a fix... | 5.3, 5.4, 6.1, 1 | n/a | According to the provided context, the optimizer used was Adam, and it had a learning rate schedule that varie... | Yes |
+| 16 | In the conclusion, what do the authors say are the main advantages of ... | 2, 4, 7, Abstract | Yes | The authors highlight several key advantages of their Transformer approach over older models based on recurren... | Yes |
+
+**Retrieval hit rate: 12/15 (80%)** against a single expected source id per question (one question has no single expected source by design and is marked n/a above).
+
+## Main failure cases and mitigations
+
+1. **Wrong source retrieved -> confident hallucination (Table 3 question).** A question about the single-attention-head ablation retrieved the *discussion* prose (section 6.2) instead of Table 3 itself, so `llama3.2:1b` had no real number to cite and fabricated a plausible-sounding but made-up estimate instead of saying it didn't know. Mitigation applied: none yet at the model level (prompt already instructs it to say so if the context lacks the answer, but a 1B model doesn't reliably follow that); the real fix would be retrieval-side -- e.g. boosting table chunks for questions containing comparison/number language.
+2. **Caption vocabulary overlap between similar figures (Figure 4 question).** A question about anaphora resolution retrieved Figure 3 and Figure 5 instead of Figure 4, because all three attention-viz captions share heavy vocabulary ("attention mechanism", "long-distance", "relate back"). The system then confidently answered with Figure 3's content under a Figure-4-shaped question. This is the most instructive failure found -- caption-based retrieval alone isn't enough to disambiguate near-duplicate figures on this paper.
+3. **Query phrasing echoing paper boilerplate instead of the technical term (positional encoding question).** The question paraphrased the paper's own recurring opening line ("no recurrence or convolution"), which pulled dense similarity toward Background/Introduction/Conclusion (which all open with that same line) instead of section 3.5, the actual answer. BM25 correctly ranked 3.5 first, but its poor dense rank dragged it out of the RRF-fused top-4 anyway -- a concrete example of why hybrid retrieval still isn't foolproof with only k=4.
+
+General mitigation applied project-wide: hybrid (dense+BM25) retrieval instead of dense-only, specifically to catch cases like #3; query-time VLM grounding anchored to the paper's own caption for attention-viz figures, specifically to reduce hallucination like the source-word mix-up found during figure ingestion testing (documented separately in CLAUDE.md).

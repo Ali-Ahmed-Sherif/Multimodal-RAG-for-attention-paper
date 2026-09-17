@@ -1,0 +1,38 @@
+[
+  {
+    "id": "Table 1",
+    "title": "Table 1: Maximum path lengths, per-layer complexity and minimum number of sequential operations for different layer types",
+    "page_start": 6,
+    "modality": "table",
+    "word_count": 137,
+    "text": "Table 1: Maximum path lengths, per-layer complexity and minimum number of sequential operations for different layer types. n is the sequence length, d is the representation dimension, k is the kernel size of convolutions and r the size of the neighborhood in restricted self-attention.\n\nContext: As noted in Table 1, a self-attention layer connects all positions with a constant number of sequentially executed operations, whereas a recurrent layer requires O(n) sequential operations.\n\n| Layer Type | Complexity per Layer | Sequential Operations | Maximum Path Length |\n|---|---|---|---|\n| Self-Attention | O(n^2 * d) | O(1) | O(1) |\n| Recurrent | O(n * d^2) | O(n) | O(n) |\n| Convolutional | O(k * n * d^2) | O(1) | O(log_k(n)) |\n| Self-Attention (restricted) | O(r * n * d) | O(1) | O(n/r) |",
+    "image_path": null
+  },
+  {
+    "id": "Table 2",
+    "title": "Table 2: The Transformer achieves better BLEU scores than previous state-of-the-art models on the English-to-German and English-to-French newstest2014 tests at a fraction of the training cost",
+    "page_start": 8,
+    "modality": "table",
+    "word_count": 195,
+    "text": "Table 2: The Transformer achieves better BLEU scores than previous state-of-the-art models on the English-to-German and English-to-French newstest2014 tests at a fraction of the training cost.\n\nContext: Table 2 summarizes our results and compares our translation quality and training costs to other model architectures from the literature.\n\n| Model | BLEU EN-DE | BLEU EN-FR | Training Cost (FLOPs) EN-DE | Training Cost (FLOPs) EN-FR |\n|---|---|---|---|---|\n| ByteNet | 23.75 | - | - | - |\n| Deep-Att + PosUnk | - | 39.2 | - | 1.0e20 |\n| GNMT + RL | 24.6 | 39.92 | 2.3e19 | 1.4e20 |\n| ConvS2S | 25.16 | 40.46 | 9.6e18 | 1.5e20 |\n| MoE | 26.03 | 40.56 | 2.0e19 | 1.2e20 |\n| Deep-Att + PosUnk Ensemble | - | 40.4 | - | 8.0e20 |\n| GNMT + RL Ensemble | 26.30 | 41.16 | 1.8e20 | 1.1e21 |\n| ConvS2S Ensemble | 26.36 | 41.29 | 7.7e19 | 1.2e21 |\n| Transformer (base model) | 27.3 | 38.1 | 3.3e18 (combined) | 3.3e18 (combined) |\n| Transformer (big) | 28.4 | 41.8 | 2.3e19 (combined) | 2.3e19 (combined) |",
+    "image_path": null
+  },
+  {
+    "id": "Table 3",
+    "title": "Table 3: Variations on the Transformer architecture",
+    "page_start": 9,
+    "modality": "table",
+    "word_count": 696,
+    "text": "Table 3: Variations on the Transformer architecture. Unlisted values are identical to those of the base model. All metrics are on the English-to-German translation development set, newstest2013. Listed perplexities are per-wordpiece, according to our byte-pair encoding, and should not be compared to per-word perplexities.\n\nContext: We present these results in Table 3.\n\n| Row | N | d_model | d_ff | h | d_k | d_v | P_drop | eps_ls | train steps | PPL (dev) | BLEU (dev) | params (x10^6) |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| base | 6 | 512 | 2048 | 8 | 64 | 64 | 0.1 | 0.1 | 100K | 4.92 | 25.8 | 65 |\n| (A) | - | - | - | 1 | 512 | 512 | - | - | - | 5.29 | 24.9 | - |\n| (A) | - | - | - | 4 | 128 | 128 | - | - | - | 5.00 | 25.5 | - |\n| (A) | - | - | - | 16 | 32 | 32 | - | - | - | 4.91 | 25.8 | - |\n| (A) | - | - | - | 32 | 16 | 16 | - | - | - | 5.01 | 25.4 | - |\n| (B) | - | - | - | - | 16 | - | - | - | - | 5.16 | 25.1 | 58 |\n| (B) | - | - | - | - | 32 | - | - | - | - | 5.01 | 25.4 | 60 |\n| (C) | 2 | - | - | - | - | - | - | - | - | 6.11 | 23.7 | 36 |\n| (C) | 4 | - | - | - | - | - | - | - | - | 5.19 | 25.3 | 50 |\n| (C) | 8 | - | - | - | - | - | - | - | - | 4.88 | 25.5 | 80 |\n| (C) | - | 256 | - | - | 32 | 32 | - | - | - | 5.75 | 24.5 | 28 |\n| (C) | - | 1024 | - | - | 128 | 128 | - | - | - | 4.66 | 26.0 | 168 |\n| (C) | - | - | 1024 | - | - | - | - | - | - | 5.12 | 25.4 | 53 |\n| (C) | - | - | 4096 | - | - | - | - | - | - | 4.75 | 26.2 | 90 |\n| (D) | - | - | - | - | - | - | 0.0 | - | - | 5.77 | 24.6 | - |\n| (D) | - | - | - | - | - | - | 0.2 | - | - | 4.95 | 25.5 | - |\n| (D) | - | - | - | - | - | - | - | 0.0 | - | 4.67 | 25.3 | - |\n| (D) | - | - | - | - | - | - | - | 0.2 | - | 5.47 | 25.7 | - |\n| (E) | - | - | - | - | - | - | - | - | - | 4.92 | 25.7 | - |\n| big | 6 | 1024 | 4096 | 16 | - | - | 0.3 | - | 300K | 4.33 | 26.4 | 213 |\n\nRow-group notes: (A) varies number of attention heads h and the attention key/value\ndimensions d_k, d_v while keeping total computation constant. (B) varies only d_k. (C)\nvaries model size (number of layers N, then d_model/d_ff together). (D) varies\nregularization (dropout P_drop, then label smoothing eps_ls). (E) replaces sinusoidal\npositional encoding with a learned positional embedding. Unlisted cells in a row are\nidentical to the base model's values, per the paper's own caption.",
+    "image_path": null
+  },
+  {
+    "id": "Table 4",
+    "title": "Table 4: The Transformer generalizes well to English constituency parsing (Results are on Section 23 of WSJ)",
+    "page_start": 10,
+    "modality": "table",
+    "word_count": 196,
+    "text": "Table 4: The Transformer generalizes well to English constituency parsing (Results are on Section 23 of WSJ).\n\nContext: Our results in Table 4 show that despite the lack of task-specific tuning our model performs surprisingly well, yielding better results than all previously reported models with the exception of the Recurrent Neural Network Grammar [8].\n\n| Parser | Training | WSJ 23 F1 |\n|---|---|---|\n| Vinyals & Kaiser et al. (2014) | WSJ only, discriminative | 88.3 |\n| Petrov et al. (2006) | WSJ only, discriminative | 90.4 |\n| Zhu et al. (2013) | WSJ only, discriminative | 90.4 |\n| Dyer et al. (2016) | WSJ only, discriminative | 91.7 |\n| Transformer (4 layers) | WSJ only, discriminative | 91.3 |\n| Zhu et al. (2013) | semi-supervised | 91.3 |\n| Huang & Harper (2009) | semi-supervised | 91.3 |\n| McClosky et al. (2006) | semi-supervised | 92.1 |\n| Vinyals & Kaiser et al. (2014) | semi-supervised | 92.1 |\n| Transformer (4 layers) | semi-supervised | 92.7 |\n| Luong et al. (2015) | multi-task | 93.0 |\n| Dyer et al. (2016) | generative | 93.3 |",
+    "image_path": null
+  }
+]

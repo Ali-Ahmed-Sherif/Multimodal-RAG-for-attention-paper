@@ -1,0 +1,677 @@
+﻿
+==========================================================================================
+[1/16] Q: I keep hearing that self-attention is better than RNNs because of path length. Can you explain what the maximum path length actually is for a restricted self-attention layer versus a plain recurrent layer, and why that difference matters?
+expected_source=Table 1
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.071s preview=[0.0417, 0.0717, -0.1625, -0.0056, 0.0201, -0.0497]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+            4  dist=0.1796
+      Table 1  dist=0.2
+            2  dist=0.2844
+     Figure 3  dist=0.3121
+        3.2.3  dist=0.314
+     Figure 5  dist=0.3263
+-- bm25 ranking (top 6 of 32) --
+      Table 1  score=36.3994
+            4  score=34.3769
+          6.3  score=20.5867
+          3.1  score=20.5587
+          3.5  score=17.9568
+            7  score=17.764
+-- fused top-4 (RRF) --
+            4  fused=0.032522  dense_rank=1 bm25_rank=2  [text] 4 Why Self-Attention. In this section we compare various aspects of self-attention layers to the recurrent and convolu- 
+      Table 1  fused=0.032522  dense_rank=2 bm25_rank=1  [table] Table 1: Maximum path lengths, per-layer complexity and minimum number of sequential operations for different layer type <-- expected
+            2  fused=0.030798  dense_rank=3 bm25_rank=7  [text] 2 Background. The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], Byt
+          3.1  fused=0.029514  dense_rank=12 bm25_rank=4  [text] 3.1 Encoder and Decoder Stacks. Encoder: The encoder is composed of a stack of N = 6 identical layers. Each layer has tw
+retrieval_hit=True
+
+-- generation (llama3.2:1b) -- prompt_chars=7969 time=1.792s total_duration=1.789s load_duration=0.017s prompt_tokens=1680 output_tokens=184 eval_duration=1.155s
+ANSWER: The maximum path length between any two input and output positions in a network composed of a self-attention layer is proportional to the number of positions involved, while a recurrent layer requires all positions to form a path. In a restricted self-attention layer, where only a neighborhood of size r is considered, the maximum path length is proportional to the number of positions r involved, resulting in an O(n/r) path length. In contrast, a plain recurrent layer, which requires O(n) sequential operations, also has a path length that increases linearly with n.
+
+The path length difference between self-attention and recurrent layers matters because self-attention can process long-range dependencies more efficiently, as it can attend to positions further away without requiring additional sequential computations. This advantage is particularly significant for tasks involving very long sequences, such as sentence translations or language modeling, where traditional recurrent layers may struggle to capture dependencies between distant positions.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+total_wall_time_s=1.931
+
+==========================================================================================
+[2/16] Q: How does the big Transformer model's BLEU score on English-to-French compare to the ConvS2S Ensemble, and is it actually cheaper to train or just better?
+expected_source=Table 2
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.036s preview=[-0.0635, 0.059, -0.1695, -0.0097, 0.0352, 0.0188]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+      Table 2  dist=0.1885
+          6.1  dist=0.2165
+          6.2  dist=0.3156
+     Abstract  dist=0.3328
+      Table 4  dist=0.3417
+          6.3  dist=0.3435
+-- bm25 ranking (top 6 of 32) --
+      Table 2  score=27.817
+          6.1  score=23.6953
+     Abstract  score=19.948
+            7  score=17.9165
+            2  score=16.1833
+            4  score=15.5003
+-- fused top-4 (RRF) --
+      Table 2  fused=0.032787  dense_rank=1 bm25_rank=1  [table] Table 2: The Transformer achieves better BLEU scores than previous state-of-the-art models on the English-to-German and  <-- expected
+          6.1  fused=0.032258  dense_rank=2 bm25_rank=2  [text] 6.1 Machine Translation. On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big
+     Abstract  fused=0.031498  dense_rank=4 bm25_rank=3  [text] Abstract. The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that
+            7  fused=0.03055  dense_rank=7 bm25_rank=4  [text] 7 Conclusion. In this work, we presented the Transformer, the first sequence transduction model based entirely on attent
+retrieval_hit=True
+
+-- generation (llama3.2:1b) -- prompt_chars=6740 time=0.925s total_duration=0.922s load_duration=0.017s prompt_tokens=1635 output_tokens=109 eval_duration=0.705s
+ANSWER: The big Transformer model's BLEU score on English-to-French is 41.8, which is significantly better than the ConvS2S Ensemble's BLEU score of 26.36. However, the big Transformer model is not necessarily cheaper to train, but rather it is more efficient in terms of training time. The big Transformer model took 3.5 days to train on 8 GPUs, while the ConvS2S Ensemble took significantly less time, averaging only 20 checkpoints and training for 20 minutes per checkpoint.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+total_wall_time_s=0.971
+
+==========================================================================================
+[3/16] Q: If you cut the model down to just a single attention head instead of the usual multi-head setup, how much worse does the BLEU score get compared to the base model?
+expected_source=Table 3
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.051s preview=[0.0346, 0.0485, -0.1636, 0.0055, 0.0892, 0.0013]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+          6.2  dist=0.2788
+      Table 2  dist=0.3055
+        3.2.2  dist=0.3065
+     Figure 2  dist=0.3352
+        3.2.3  dist=0.3405
+      Table 3  dist=0.3585
+-- bm25 ranking (top 6 of 32) --
+          6.1  score=22.6649
+        3.2.2  score=21.8012
+          6.2  score=21.4777
+     Figure 1  score=20.997
+     Abstract  score=19.4496
+     Figure 2  score=18.9397
+-- fused top-4 (RRF) --
+          6.2  fused=0.032266  dense_rank=1 bm25_rank=3  [text] 6.2 Model Variations. To evaluate the importance of different components of the Transformer, we varied our base model in
+        3.2.2  fused=0.032002  dense_rank=3 bm25_rank=2  [text] 3.2.2 Multi-Head Attention. Instead of performing a single attention function with dmodel-dimensional keys, values and q
+     Figure 2  fused=0.030777  dense_rank=4 bm25_rank=6  [figure_diagram] Figure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running
+          6.1  fused=0.030679  dense_rank=10 bm25_rank=1  [text] 6.1 Machine Translation. On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big
+retrieval_hit=False
+
+-- VLM grounding calls (gemma3:4b) --
+   [Figure 2] image=data/processed/images/figure2.png time=3.124s total_duration=3.119s load_duration=0.014s prompt_tokens=366 output_tokens=146
+     response: Looking at the diagram, the multi-head attention model utilizes multiple linear projections of the values (V), keys (K), and queries (Q) before performing scaled dot-product attention.  Each of these linear projections then feeds into a separate scaled dot-product attention module. The outputs of th...
+
+-- generation (llama3.2:1b) -- prompt_chars=9232 time=2.685s total_duration=2.683s load_duration=0.011s prompt_tokens=2107 output_tokens=362 eval_duration=2.42s
+ANSWER: Based on the provided context, the base model uses a multi-head setup with 8 attention heads, each projecting the input vectors Q, K, and V to a lower dimension (dk) using 64-dimensional projections. The single-head setup uses 4 attention heads, each projecting the input vectors Q, K, and V to a lower dimension (dmodel/h) using 64-dimensional projections.
+
+If we cut the model down to just a single attention head instead of the usual multi-head setup, the amount of computation and training time would increase significantly. In the given context, the single-head setup uses 64-dimensional projections, which requires a lot of computations and memory.
+
+Assuming a similar amount of computation and memory as the original multi-head setup, the single-head setup would likely be computationally expensive and could potentially be worse in terms of training time. However, without specific data or a direct comparison, it's difficult to say exactly how much worse the BLEU score would get.
+
+To give a rough estimate, the single-head setup might be 10-20 times more computationally expensive than the original multi-head setup, which could potentially lead to a significant loss in BLEU score. However, this is speculative and depends on various factors, such as the specific architecture and training parameters.
+
+It's worth noting that the original paper discusses the benefits of multi-head attention, such as better capturing complex relationships in the data and reducing overfitting. If the single-head setup is used, it's likely that the model would suffer from these drawbacks, potentially leading to a worse BLEU score.
+
+In conclusion, while it's difficult to provide a precise estimate, using a single attention head instead of the original multi-head setup could potentially lead to a worse BLEU score due to increased computation and training time.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+total_wall_time_s=5.871
+
+==========================================================================================
+[4/16] Q: What's the actual difference in perplexity, BLEU, and parameter count between the base Transformer config and the big one they trained for longer?
+expected_source=Table 3
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.038s preview=[0.0284, 0.0721, -0.1752, -0.0389, 0.0841, -0.0117]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+      Table 2  dist=0.242
+      Table 3  dist=0.2733
+          6.2  dist=0.2787
+          6.1  dist=0.2808
+      Table 4  dist=0.3455
+          6.3  dist=0.3526
+-- bm25 ranking (top 6 of 32) --
+          5.2  score=17.3922
+          6.1  score=16.8476
+          5.4  score=15.9225
+            1  score=15.3613
+          6.3  score=13.9398
+     Abstract  score=13.0704
+-- fused top-4 (RRF) --
+          6.1  fused=0.031754  dense_rank=4 bm25_rank=2  [text] 6.1 Machine Translation. On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big
+      Table 3  fused=0.031054  dense_rank=2 bm25_rank=7  [table] Table 3: Variations on the Transformer architecture. Unlisted values are identical to those of the base model. All metri <-- expected
+      Table 2  fused=0.030886  dense_rank=1 bm25_rank=9  [table] Table 2: The Transformer achieves better BLEU scores than previous state-of-the-art models on the English-to-German and 
+          6.3  fused=0.030536  dense_rank=6 bm25_rank=5  [text] 6.3 English Constituency Parsing. To evaluate if the Transformer can generalize to other tasks we performed experiments 
+retrieval_hit=True
+
+-- generation (llama3.2:1b) -- prompt_chars=7452 time=1.258s total_duration=1.254s load_duration=0.018s prompt_tokens=2401 output_tokens=138 eval_duration=0.929s
+ANSWER: The base Transformer model (d_model = 512, d_ff = 2048) and the big Transformer model (d_model = 1024, d_ff = 4096) trained for longer had the following results:
+
+- BLEU scores: Big model (2.3e19 FLOPs) > Base model (25.8 BLEU)
+- Parameter count: Big model (213 FLOPs) > Base model (65 FLOPs)
+- Perplexity (per-wordpiece): Big model (24.5) < Base model (25.8)
+
+Note that these results are compared to other model architectures from the literature that were not specifically mentioned.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+total_wall_time_s=1.308
+
+==========================================================================================
+[5/16] Q: For the constituency parsing experiment, how does the semi-supervised 4-layer Transformer's F1 score stack up against the Dyer et al. 2016 generative model?
+expected_source=Table 4
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.035s preview=[-0.0298, 0.0492, -0.1672, -0.0764, 0.1485, 0.0064]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+      Table 4  dist=0.2207
+          6.3  dist=0.2383
+      Table 3  dist=0.3381
+     Abstract  dist=0.3381
+          6.2  dist=0.3394
+      Table 2  dist=0.355
+-- bm25 ranking (top 6 of 32) --
+      Table 4  score=48.7696
+          6.3  score=19.9837
+     Abstract  score=11.3936
+     Figure 1  score=10.9406
+          3.1  score=10.7097
+          6.1  score=9.9483
+-- fused top-4 (RRF) --
+      Table 4  fused=0.032787  dense_rank=1 bm25_rank=1  [table] Table 4: The Transformer generalizes well to English constituency parsing (Results are on Section 23 of WSJ).  Context:  <-- expected
+          6.3  fused=0.032258  dense_rank=2 bm25_rank=2  [text] 6.3 English Constituency Parsing. To evaluate if the Transformer can generalize to other tasks we performed experiments 
+     Abstract  fused=0.031498  dense_rank=4 bm25_rank=3  [text] Abstract. The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that
+      Table 3  fused=0.030159  dense_rank=3 bm25_rank=10  [table] Table 3: Variations on the Transformer architecture. Unlisted values are identical to those of the base model. All metri
+retrieval_hit=True
+
+-- generation (llama3.2:1b) -- prompt_chars=8060 time=0.708s total_duration=0.702s load_duration=0.021s prompt_tokens=2383 output_tokens=55 eval_duration=0.365s
+ANSWER: The semi-supervised 4-layer Transformer's F1 score in the constituency parsing experiment is significantly better than the Dyer et al. 2016 generative model, with a score of 92.7 compared to the model's score of 91.3.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+total_wall_time_s=0.756
+
+==========================================================================================
+[6/16] Q: I'm looking at the overall architecture diagram and I'm a bit lost on how the encoder and decoder stacks actually connect to each other. Can you walk me through the data flow?
+expected_source=Figure 1
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.037s preview=[0.0154, 0.065, -0.1415, -0.0332, 0.0635, -0.0513]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+          3.1  dist=0.203
+     Figure 1  dist=0.2445
+            3  dist=0.2633
+          3.3  dist=0.3223
+        3.2.3  dist=0.3261
+     Figure 2  dist=0.3586
+-- bm25 ranking (top 6 of 32) --
+     Figure 1  score=26.1873
+     Figure 2  score=23.9539
+          3.1  score=20.5622
+     Abstract  score=19.3717
+        3.2.2  score=18.5682
+          3.5  score=17.8289
+-- fused top-4 (RRF) --
+     Figure 1  fused=0.032522  dense_rank=2 bm25_rank=1  [figure_diagram] Figure 1: The Transformer - model architecture.  Structural description (gemma3:4b): Here’s a structural description of  <-- expected
+          3.1  fused=0.032266  dense_rank=1 bm25_rank=3  [text] 3.1 Encoder and Decoder Stacks. Encoder: The encoder is composed of a stack of N = 6 identical layers. Each layer has tw
+     Figure 2  fused=0.031281  dense_rank=6 bm25_rank=2  [figure_diagram] Figure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running
+            3  fused=0.030798  dense_rank=3 bm25_rank=7  [text] 3 Model Architecture. Most competitive neural sequence transduction models have an encoder-decoder structure [5, 2, 35].
+retrieval_hit=True
+
+-- VLM grounding calls (gemma3:4b) --
+   [Figure 1] image=data/processed/images/figure1.png time=1.643s total_duration=1.64s load_duration=0.024s prompt_tokens=368 output_tokens=94
+     response: Okay, let’s break down the data flow in this Transformer architecture. The diagram shows two encoder stacks and one decoder stack. Initially, the input sequence is processed by an input embedding and positional encoding, then passed through the first encoder block. This output is then fed into the d...
+   [Figure 2] image=data/processed/images/figure2.png time=3.091s total_duration=3.087s load_duration=0.01s prompt_tokens=368 output_tokens=125
+     response: Okay, let’s break down the data flow between the encoder and decoder stacks in this architecture. The encoder consists of multiple stacked layers, each performing scaled dot-product attention followed by a linear projection. The output of each encoder layer is then fed into the multi-head attention ...
+
+-- generation (llama3.2:1b) -- prompt_chars=9828 time=2.866s total_duration=2.863s load_duration=0.011s prompt_tokens=2104 output_tokens=398 eval_duration=2.58s
+ANSWER: The diagram illustrates the top-to-bottom flow of data through the Transformer architecture. Here's a breakdown of the connections between the encoder and decoder stacks:
+
+*   The input sequence is first processed by an input embedding and positional encoding, then passed through the first encoder block. This output is then fed into the decoder, where it interacts with the encoded input via masked multi-head attention.
+*   The decoder's output is linearly transformed and passed through a softmax layer to produce output probabilities. The output of the decoder is then stacked on top of the encoder's output to create the final representation, which is the output sequence (y1, ..., ym) of symbols one element at a time.
+
+To illustrate this flow, let's consider the process of generating a sentence. Here's a step-by-step breakdown of how the encoder and decoder stacks connect:
+
+1.  The input sequence (x1, ..., xn) is first processed by an input embedding and positional encoding, resulting in a dense vector representation for each element in the sequence.
+2.  The encoded input is then passed through a multi-head attention block, where each head attends to different parts of the input sequence.
+3.  The attention outputs are then passed through a linear projection layer, which converts the output into a dense vector representation for the next element in the sequence.
+4.  The decoder's output is then passed through the same linear projection layer, resulting in a dense vector representation for the next element in the sequence.
+5.  The encoded input is then passed through a linear projection layer, resulting in a dense vector representation for the next element in the sequence.
+6.  The decoder's output is then passed through a softmax layer, resulting in a probability distribution over the output vocabulary.
+
+By stacking these layers on top of each other, the encoder and decoder stacks allow the model to process the input sequence in parallel, while also allowing the model to attend to different parts of the input sequence when generating the output sequence.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+total_wall_time_s=7.647
+
+==========================================================================================
+[7/16] Q: Can you explain how Scaled Dot-Product Attention feeds into Multi-Head Attention based on the diagram? Like, what happens step by step before you get the final output?
+expected_source=Figure 2
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.036s preview=[-0.001, 0.0421, -0.163, -0.0542, 0.0515, -0.0293]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+     Figure 2  dist=0.1408
+        3.2.1  dist=0.215
+          3.2  dist=0.2183
+        3.2.2  dist=0.225
+        3.2.3  dist=0.2573
+     Figure 5  dist=0.2961
+-- bm25 ranking (top 6 of 32) --
+     Figure 2  score=25.499
+     Figure 1  score=19.9961
+        3.2.1  score=18.3953
+          3.2  score=16.96
+        3.2.2  score=15.2189
+     Abstract  score=13.4122
+-- fused top-4 (RRF) --
+     Figure 2  fused=0.032787  dense_rank=1 bm25_rank=1  [figure_diagram] Figure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running <-- expected
+        3.2.1  fused=0.032002  dense_rank=2 bm25_rank=3  [text] 3.2.1 Scaled Dot-Product Attention. We call our particular attention "Scaled Dot-Product Attention" (Figure 2). The inpu
+          3.2  fused=0.031498  dense_rank=3 bm25_rank=4  [text] 3.2 Attention. An attention function can be described as mapping a query and a set of key-value pairs to an output, wher
+        3.2.2  fused=0.03101  dense_rank=4 bm25_rank=5  [text] 3.2.2 Multi-Head Attention. Instead of performing a single attention function with dmodel-dimensional keys, values and q
+retrieval_hit=True
+
+-- VLM grounding calls (gemma3:4b) --
+   [Figure 2] image=data/processed/images/figure2.png time=3.104s total_duration=3.097s load_duration=0.015s prompt_tokens=365 output_tokens=142
+     response: Here’s an explanation of how Scaled Dot-Product Attention feeds into Multi-Head Attention, based on the diagram:
+
+The diagram shows that Multi-Head Attention first applies three linear transformations to the input vectors V, K, and Q. These transformed vectors are then fed into the Scaled Dot-Produc...
+
+-- generation (llama3.2:1b) -- prompt_chars=8281 time=1.701s total_duration=1.699s load_duration=0.006s prompt_tokens=1862 output_tokens=221 eval_duration=1.423s
+ANSWER: Here's a step-by-step explanation of how Scaled Dot-Product Attention feeds into Multi-Head Attention based on the diagram:
+
+1. The input vectors Q, K, and V are fed into the Scaled Dot-Product Attention block, which projects them to the same dimension "h".
+2. The three projected vectors Q, K, and V are then passed through three linear layers, each projecting the vectors to a lower dimension (h).
+3. The linear layers apply the same transformation to the three input vectors, resulting in three output vectors of dimension "h".
+4. The three output vectors are then concatenated together, forming a matrix Q.
+5. The concatenated Q matrix is then passed through an additional linear layer, projecting the output to dimension "dmodel" (the model's input dimension).
+6. The resulting output is then passed through a softmax function, which normalizes the output and turns it into probabilities.
+7. The output of the Scaled Dot-Product Attention block is now a weighted sum of the value vectors, where the weights are determined by the SoftMax probabilities.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+total_wall_time_s=4.853
+
+==========================================================================================
+[8/16] Q: There's a figure showing an attention visualization for a long sentence about government laws -- what long-distance dependency is it actually trying to illustrate?
+expected_source=Figure 3
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.033s preview=[0.0417, 0.0786, -0.1685, -0.108, 0.0302, 0.0299]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+     Figure 3  dist=0.2426
+            4  dist=0.3519
+     Figure 5  dist=0.3544
+     Figure 2  dist=0.3654
+          3.2  dist=0.3766
+            2  dist=0.3869
+-- bm25 ranking (top 6 of 32) --
+     Figure 3  score=20.4898
+            4  score=13.2989
+            2  score=12.2052
+     Abstract  score=11.6668
+     Figure 1  score=11.4504
+            1  score=11.4167
+-- fused top-4 (RRF) --
+     Figure 3  fused=0.032787  dense_rank=1 bm25_rank=1  [figure_attnviz] Figure 3: An example of the attention mechanism following long-distance dependencies in the encoder self-attention in la <-- expected
+            4  fused=0.032258  dense_rank=2 bm25_rank=2  [text] 4 Why Self-Attention. In this section we compare various aspects of self-attention layers to the recurrent and convolu- 
+            2  fused=0.031025  dense_rank=6 bm25_rank=3  [text] 2 Background. The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], Byt
+            1  fused=0.029857  dense_rank=8 bm25_rank=6  [text] 1 Introduction. Recurrent neural networks, long short-term memory [13] and gated recurrent [7] neural networks in partic
+retrieval_hit=True
+
+-- VLM grounding calls (gemma3:4b) --
+   [Figure 3] image=data/processed/images/figure3.png time=2.636s total_duration=2.627s load_duration=0.013s prompt_tokens=444 output_tokens=95
+     response: The attention visualization in the image is illustrating a long-distance dependency within the sentence “making…more difficult.” Specifically, it’s demonstrating how the model attends to the word “making” to understand its relationship with the subsequent word “more difficult,” which is a dependency...
+
+-- generation (llama3.2:1b) -- prompt_chars=8647 time=0.672s total_duration=0.669s load_duration=0.012s prompt_tokens=1686 output_tokens=64 eval_duration=0.411s
+ANSWER: The figure [Figure 3] (figure_attnviz, page 13) illustrates an attention mechanism following long-distance dependencies in the encoder self-attention in layer 5 of 6, specifically demonstrating how the model attends to the word "making" to understand its relationship with the subsequent word "more difficult".
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+   after:  [{'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+total_wall_time_s=3.351
+
+==========================================================================================
+[9/16] Q: One of the attention figures seems to be about a word referring back to something earlier in the sentence. What linguistic phenomenon is that, and which word's attention is being shown?
+expected_source=Figure 4
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.03s preview=[0.0361, 0.0397, -0.1688, -0.0642, 0.0534, 0.0265]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+     Figure 3  dist=0.2305
+     Figure 5  dist=0.2333
+     Figure 4  dist=0.2594
+          3.2  dist=0.2793
+            4  dist=0.2949
+        3.2.3  dist=0.3017
+-- bm25 ranking (top 6 of 32) --
+            4  score=21.6321
+     Figure 1  score=20.6899
+            2  score=19.0369
+     Figure 2  score=18.9894
+     Figure 3  score=18.5599
+     Abstract  score=17.8278
+-- fused top-4 (RRF) --
+     Figure 3  fused=0.031778  dense_rank=1 bm25_rank=5  [figure_attnviz] Figure 3: An example of the attention mechanism following long-distance dependencies in the encoder self-attention in la
+            4  fused=0.031778  dense_rank=5 bm25_rank=1  [text] 4 Why Self-Attention. In this section we compare various aspects of self-attention layers to the recurrent and convolu- 
+            2  fused=0.030798  dense_rank=7 bm25_rank=3  [text] 2 Background. The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], Byt
+     Figure 5  fused=0.030622  dense_rank=2 bm25_rank=9  [figure_attnviz] Figure 5: Many of the attention heads exhibit behaviour that seems related to the structure of the sentence. We give two
+retrieval_hit=False
+
+-- VLM grounding calls (gemma3:4b) --
+   [Figure 3] image=data/processed/images/figure3.png time=2.482s total_duration=2.469s load_duration=0.015s prompt_tokens=451 output_tokens=94
+     response: The attention figure in the image illustrates a linguistic phenomenon called “long-distance dependencies,” where a word attends to something earlier in the sentence. Specifically, the figure demonstrates the attention mechanism for the word “making” as it relates to the phrase “making…more difficult...
+   [Figure 5] image=data/processed/images/figure5.png time=2.603s total_duration=2.595s load_duration=0.024s prompt_tokens=435 output_tokens=92
+     response: The attention figure demonstrates a phenomenon called “self-attention,” where a word attends to other words in the same sentence to understand its context. Specifically, this image shows the encoder self-attention at layer 5 of 6, highlighting how words can relate back to earlier parts of the senten...
+
+-- generation (llama3.2:1b) -- prompt_chars=7485 time=0.587s total_duration=0.585s load_duration=0.013s prompt_tokens=1511 output_tokens=57 eval_duration=0.371s
+ANSWER: The attention figure appears to illustrate a linguistic phenomenon called "long-distance dependencies" in the context of the sentence "making...more difficult." In this specific context, a word's attention is being shown to relate back to an earlier part of the sentence, specifically the verb "making."
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+total_wall_time_s=5.715
+
+==========================================================================================
+[10/16] Q: What's the point of the figure that shows two different attention heads on the same sentence -- what does it tell us about what the different heads are doing?
+expected_source=Figure 5
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.035s preview=[0.0015, 0.044, -0.1741, -0.0548, 0.0683, 0.002]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+     Figure 5  dist=0.2127
+     Figure 4  dist=0.2417
+     Figure 2  dist=0.2584
+     Figure 3  dist=0.2597
+        3.2.3  dist=0.2673
+          3.2  dist=0.2707
+-- bm25 ranking (top 6 of 32) --
+     Figure 5  score=20.7458
+            4  score=18.3077
+     Figure 3  score=15.7187
+     Figure 4  score=15.2296
+        3.2.2  score=15.0074
+          6.2  score=14.6718
+-- fused top-4 (RRF) --
+     Figure 5  fused=0.032787  dense_rank=1 bm25_rank=1  [figure_attnviz] Figure 5: Many of the attention heads exhibit behaviour that seems related to the structure of the sentence. We give two <-- expected
+     Figure 4  fused=0.031754  dense_rank=2 bm25_rank=4  [figure_attnviz] Figure 4: Two attention heads, also in layer 5 of 6, apparently involved in anaphora resolution. Top: Full attentions fo
+     Figure 3  fused=0.031498  dense_rank=4 bm25_rank=3  [figure_attnviz] Figure 3: An example of the attention mechanism following long-distance dependencies in the encoder self-attention in la
+            4  fused=0.030835  dense_rank=8 bm25_rank=2  [text] 4 Why Self-Attention. In this section we compare various aspects of self-attention layers to the recurrent and convolu- 
+retrieval_hit=True
+
+-- VLM grounding calls (gemma3:4b) --
+   [Figure 5] image=data/processed/images/figure5.png time=2.604s total_duration=2.588s load_duration=0.046s prompt_tokens=431 output_tokens=92
+     response: The figure illustrates how the encoder’s self-attention mechanism, specifically at layer 5 of 6, utilizes two “attention heads” to process a sentence.  The different lines represent the attention weights assigned by each head, demonstrating how they focus on different parts of the input sentence whe...
+   [Figure 4] image=data/processed/images/figure4.png time=2.518s total_duration=2.506s load_duration=0.035s prompt_tokens=433 output_tokens=82
+     response: The figure illustrates how two attention heads within layer 5 of the Transformer model are simultaneously processing the same sentence. According to the paper’s caption, these heads are specifically involved in anaphora resolution, focusing on the word "its." This visualization demonstrates that the...
+   [Figure 3] image=data/processed/images/figure3.png time=2.478s total_duration=2.472s load_duration=0.015s prompt_tokens=447 output_tokens=82
+     response: The figure illustrates how the attention mechanism captures long-distance dependencies within a sentence. Specifically, it shows two attention heads focusing on different parts of the phrase “making more difficult” – one head attends to “making” and the other attends to “more difficult.” This demons...
+
+-- generation (llama3.2:1b) -- prompt_chars=6490 time=0.587s total_duration=0.584s load_duration=0.024s prompt_tokens=1308 output_tokens=60 eval_duration=0.387s
+ANSWER: According to the context, the figure illustrates how two attention heads within the Transformer model are simultaneously processing the same sentence, focusing on the word "its". This suggests that the model is attempting to capture different aspects of the sentence's context and relationships between words, rather than relying on a single interpretation.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+   after:  [{'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+total_wall_time_s=8.239
+
+==========================================================================================
+[11/16] Q: According to the abstract, what BLEU score did they get on English-to-German translation, and roughly how long did it take to train the model?
+expected_source=Abstract
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.031s preview=[0.0153, 0.0374, -0.194, 0.0006, 0.038, 0.0155]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+          6.1  dist=0.1996
+      Table 2  dist=0.218
+          6.2  dist=0.2862
+          5.1  dist=0.3086
+     Abstract  dist=0.3207
+          5.2  dist=0.3228
+-- bm25 ranking (top 6 of 32) --
+     Abstract  score=23.6545
+          6.1  score=20.0134
+            7  score=16.2185
+      Table 3  score=14.7832
+      Table 2  score=14.7479
+          5.4  score=14.6883
+-- fused top-4 (RRF) --
+          6.1  fused=0.032522  dense_rank=1 bm25_rank=2  [text] 6.1 Machine Translation. On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big
+     Abstract  fused=0.031778  dense_rank=5 bm25_rank=1  [text] Abstract. The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that <-- expected
+      Table 2  fused=0.031514  dense_rank=2 bm25_rank=5  [table] Table 2: The Transformer achieves better BLEU scores than previous state-of-the-art models on the English-to-German and 
+            7  fused=0.030798  dense_rank=7 bm25_rank=3  [text] 7 Conclusion. In this work, we presented the Transformer, the first sequence transduction model based entirely on attent
+retrieval_hit=True
+
+-- generation (llama3.2:1b) -- prompt_chars=6729 time=0.636s total_duration=0.629s load_duration=0.04s prompt_tokens=1631 output_tokens=63 eval_duration=0.399s
+ANSWER: According to the abstract, the Transformer (big) model achieved a BLEU score of 28.4 on the English-to-German translation task, and it was trained for 3.5 days on 8 P100 GPUs.
+
+No specific time frame is mentioned for the English-to-French translation task.
+
+-- ollama ps before -> after --
+   before: [{'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+total_wall_time_s=0.68
+
+==========================================================================================
+[12/16] Q: Can you explain what scaled dot-product attention actually is, and why they divide by the square root of d_k instead of just using the raw dot product?
+expected_source=3.2.1
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.025s preview=[0.0262, 0.0678, -0.1688, -0.0655, 0.0375, 0.0036]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+        3.2.1  dist=0.1697
+     Figure 2  dist=0.2383
+          3.2  dist=0.2626
+        3.2.2  dist=0.2783
+          6.2  dist=0.3163
+        3.2.3  dist=0.324
+-- bm25 ranking (top 6 of 32) --
+        3.2.1  score=28.0286
+     Figure 2  score=26.5759
+          3.2  score=22.1573
+        3.2.2  score=19.5249
+          5.3  score=16.487
+        3.2.3  score=15.8542
+-- fused top-4 (RRF) --
+        3.2.1  fused=0.032787  dense_rank=1 bm25_rank=1  [text] 3.2.1 Scaled Dot-Product Attention. We call our particular attention "Scaled Dot-Product Attention" (Figure 2). The inpu <-- expected
+     Figure 2  fused=0.032258  dense_rank=2 bm25_rank=2  [figure_diagram] Figure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running
+          3.2  fused=0.031746  dense_rank=3 bm25_rank=3  [text] 3.2 Attention. An attention function can be described as mapping a query and a set of key-value pairs to an output, wher
+        3.2.2  fused=0.03125  dense_rank=4 bm25_rank=4  [text] 3.2.2 Multi-Head Attention. Instead of performing a single attention function with dmodel-dimensional keys, values and q
+retrieval_hit=True
+
+-- VLM grounding calls (gemma3:4b) --
+   [Figure 2] image=data/processed/images/figure2.png time=3.236s total_duration=3.229s load_duration=0.022s prompt_tokens=363 output_tokens=140
+     response: Here's an explanation of scaled dot-product attention based on the diagram:
+
+Scaled dot-product attention calculates attention weights by taking the dot product between a Query (Q), a Key (K), and a Value (V). The diagram shows this initial MatMul operation connecting Q, K, and V. To prevent the dot...
+
+-- generation (llama3.2:1b) -- prompt_chars=8232 time=2.034s total_duration=2.027s load_duration=0.011s prompt_tokens=1853 output_tokens=269 eval_duration=1.782s
+ANSWER: Scaled dot-product attention is a type of attention mechanism used in neural networks to selectively focus on certain parts of the input data. It works by computing the dot product of the query and key vectors, but then scales the result by a factor of 1/sqrt(d_k) instead of simply using the raw dot product.
+
+The raw dot product would result in a value that is proportional to the product of the query and key vectors, which can be quite large and computationally expensive to calculate for large dimensions (d_k). By scaling the result by 1/sqrt(d_k), the model reduces the magnitude of the output, making it more suitable for large dimensions.
+
+This scaling is important because the dot product function has a concave shape, meaning that as the input values increase, the output value decreases exponentially. By scaling the dot product, the model effectively "shoves" the high-value regions of the input data to the bottom, allowing the model to focus more on the smaller, more relevant parts.
+
+In practice, the scaling factor 1/sqrt(d_k) is typically set to a small value, such as 1/sqrt(1000), to ensure that the attention weights are not too large. This value is also chosen based on the computational cost of the model and the desired trade-off between attention weights and computation cost.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+total_wall_time_s=5.306
+
+==========================================================================================
+[13/16] Q: Why did they bother with multiple attention heads instead of just using one big attention function? What's the benefit?
+expected_source=3.2.2
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.053s preview=[-0.0102, 0.0758, -0.1596, -0.0146, 0.0275, 0.0151]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+        3.2.2  dist=0.2661
+          3.2  dist=0.2929
+     Figure 2  dist=0.2974
+        3.2.3  dist=0.3045
+     Figure 4  dist=0.3183
+     Figure 5  dist=0.3324
+-- bm25 ranking (top 6 of 32) --
+        3.2.2  score=12.1996
+            4  score=11.8962
+     Figure 2  score=11.8144
+     Figure 4  score=11.5073
+     Figure 1  score=11.478
+          5.2  score=10.1701
+-- fused top-4 (RRF) --
+        3.2.2  fused=0.032787  dense_rank=1 bm25_rank=1  [text] 3.2.2 Multi-Head Attention. Instead of performing a single attention function with dmodel-dimensional keys, values and q <-- expected
+     Figure 2  fused=0.031746  dense_rank=3 bm25_rank=3  [figure_diagram] Figure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running
+            4  fused=0.031054  dense_rank=7 bm25_rank=2  [text] 4 Why Self-Attention. In this section we compare various aspects of self-attention layers to the recurrent and convolu- 
+     Figure 4  fused=0.03101  dense_rank=5 bm25_rank=4  [figure_attnviz] Figure 4: Two attention heads, also in layer 5 of 6, apparently involved in anaphora resolution. Top: Full attentions fo
+retrieval_hit=True
+
+-- VLM grounding calls (gemma3:4b) --
+   [Figure 2] image=data/processed/images/figure2.png time=2.971s total_duration=2.96s load_duration=0.019s prompt_tokens=353 output_tokens=129
+     response: Here’s an explanation of why the diagram shows multiple attention heads, based on the image:
+
+The diagram illustrates “Multi-Head Attention” which uses multiple scaled dot-product attention functions in parallel. Each head starts with linear transformations applied to the value (V), key (K), and que...
+   [Figure 4] image=data/processed/images/figure4.png time=2.573s total_duration=2.562s load_duration=0.027s prompt_tokens=424 output_tokens=89
+     response: The authors used multiple attention heads – as seen in this diagram – to allow the model to capture different aspects of the relationships between words simultaneously. Specifically, the caption indicates that these heads are involved in anaphora resolution, focusing on the word “its” and its refere...
+
+-- generation (llama3.2:1b) -- prompt_chars=10197 time=2.444s total_duration=2.441s load_duration=0.011s prompt_tokens=2189 output_tokens=330 eval_duration=2.124s
+ANSWER: The authors of the paper "Attention Is All You Need" implemented multiple attention heads to capture different aspects of relationships between words in a sentence simultaneously. This is done by having multiple attention heads, each with its own set of projections (queries, keys, and values) and a separate set of linear layers. The benefits of using multiple attention heads include:
+
+1. **Reducing computational complexity**: By using multiple heads, the authors can process longer sequences of input data without increasing the computational cost significantly. This is because each head operates on a smaller set of projected vectors, resulting in a lower number of sequential operations required.
+2. **Improving interpretability**: The use of multiple attention heads allows the authors to inspect attention distributions from their models and gain insights into how individual attention heads learn to perform different tasks.
+3. **Enhancing long-range dependencies**: By having multiple heads, the authors can capture more nuanced and potentially conflicting relationships between words in a sentence, leading to a richer representation of the input text.
+4. **Better handling of long sequences**: The authors plan to investigate the approach of restricting self-attention to consider only a neighborhood of size r in the input sequence centered around the respective output position, which would increase the maximum path length to O(n/r). They also note that this would be more efficient than using a single convolutional layer with kernel width k < n, which requires O(n/k) convolutional layers.
+
+In summary, implementing multiple attention heads allows the authors to capture different aspects of relationships between words in a sentence simultaneously, reducing computational complexity, improving interpretability, enhancing long-range dependencies, and better handling of long sequences.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+total_wall_time_s=8.051
+
+==========================================================================================
+[14/16] Q: Since the Transformer has no recurrence or convolution at all, how does it even know the order of the words in a sentence?
+expected_source=3.5
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.039s preview=[-0.0014, 0.0265, -0.1805, -0.0662, 0.089, -0.0598]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+            2  dist=0.2598
+            7  dist=0.273
+            1  dist=0.2782
+      Table 4  dist=0.2799
+     Abstract  dist=0.292
+        3.2.3  dist=0.2963
+-- bm25 ranking (top 6 of 32) --
+          3.5  score=22.5919
+            2  score=18.402
+            4  score=14.9752
+            1  score=13.9235
+     Abstract  score=13.4858
+     Figure 1  score=11.8527
+-- fused top-4 (RRF) --
+            2  fused=0.032522  dense_rank=1 bm25_rank=2  [text] 2 Background. The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], Byt
+            1  fused=0.031498  dense_rank=3 bm25_rank=4  [text] 1 Introduction. Recurrent neural networks, long short-term memory [13] and gated recurrent [7] neural networks in partic
+            7  fused=0.030835  dense_rank=2 bm25_rank=8  [text] 7 Conclusion. In this work, we presented the Transformer, the first sequence transduction model based entirely on attent
+     Abstract  fused=0.030769  dense_rank=5 bm25_rank=5  [text] Abstract. The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that
+retrieval_hit=False
+
+-- generation (llama3.2:1b) -- prompt_chars=7759 time=0.631s total_duration=0.621s load_duration=0.015s prompt_tokens=1525 output_tokens=62 eval_duration=0.391s
+ANSWER: Since the Transformer doesn't rely on sequence-aligned recurrence or convolution, it doesn't use traditional sequence processing techniques like word-by-word prediction or tokenization. Instead, it uses an alternative approach to encode and decode input sequences, leveraging self-attention mechanisms to capture global dependencies and relationships between input and output positions.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+total_wall_time_s=0.682
+
+==========================================================================================
+[15/16] Q: What optimizer did they use to train the model, and did they use a fixed learning rate or some kind of schedule?
+expected_source=None
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.026s preview=[-0.0065, 0.0297, -0.2041, 0.001, 0.0647, -0.0172]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+          5.3  dist=0.2208
+          5.2  dist=0.2666
+          6.1  dist=0.2913
+          5.4  dist=0.3024
+          6.2  dist=0.3055
+      Table 2  dist=0.3125
+-- bm25 ranking (top 6 of 32) --
+          3.5  score=18.3954
+          5.3  score=17.9683
+          3.3  score=14.4821
+          5.4  score=13.0247
+            2  score=11.9359
+            1  score=11.4361
+-- fused top-4 (RRF) --
+          5.3  fused=0.032522  dense_rank=1 bm25_rank=2  [text] 5.3 Optimizer. We used the Adam optimizer [20] with β1 = 0.9, β2 = 0.98 and ϵ = 10−9. We varied the learning rate over t
+          5.4  fused=0.03125  dense_rank=4 bm25_rank=4  [text] 5.4 Regularization. We employ three types of regularization during training: Residual Dropout We apply dropout [33] to t
+          6.1  fused=0.030798  dense_rank=3 bm25_rank=7  [text] 6.1 Machine Translation. On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big
+            1  fused=0.030077  dense_rank=7 bm25_rank=6  [text] 1 Introduction. Recurrent neural networks, long short-term memory [13] and gated recurrent [7] neural networks in partic
+retrieval_hit=None
+
+-- generation (llama3.2:1b) -- prompt_chars=5316 time=0.544s total_duration=0.534s load_duration=0.016s prompt_tokens=1193 output_tokens=55 eval_duration=0.338s
+ANSWER: According to the provided context, the optimizer used was Adam, and it had a learning rate schedule that varied over the course of training, increasing linearly for the first 4000 warmup steps and decreasing proportionally to the inverse square root of the step number thereafter.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+total_wall_time_s=0.579
+
+==========================================================================================
+[16/16] Q: In the conclusion, what do the authors say are the main advantages of their approach over the older recurrent and convolutional models?
+expected_source=Conclusion
+
+-- embed (search_query prefix) -- dims=768 l2_norm=1.0 time=0.039s preview=[0.0248, 0.0395, -0.1699, -0.0572, 0.0458, 0.0122]
+
+-- dense ranking (top 6 of 32, Chroma cosine distance) --
+            2  dist=0.3484
+      Table 4  dist=0.3621
+            4  dist=0.366
+     Abstract  dist=0.3678
+            1  dist=0.3683
+            7  dist=0.3807
+-- bm25 ranking (top 6 of 32) --
+            4  score=18.3016
+            7  score=16.3371
+            2  score=15.9416
+            1  score=13.8303
+     Abstract  score=13.1979
+      Table 1  score=12.0215
+-- fused top-4 (RRF) --
+            2  fused=0.032266  dense_rank=1 bm25_rank=3  [text] 2 Background. The goal of reducing sequential computation also forms the foundation of the Extended Neural GPU [16], Byt
+            4  fused=0.032266  dense_rank=3 bm25_rank=1  [text] 4 Why Self-Attention. In this section we compare various aspects of self-attention layers to the recurrent and convolu- 
+            7  fused=0.031281  dense_rank=6 bm25_rank=2  [text] 7 Conclusion. In this work, we presented the Transformer, the first sequence transduction model based entirely on attent
+     Abstract  fused=0.03101  dense_rank=4 bm25_rank=5  [text] Abstract. The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that
+retrieval_hit=False
+
+-- generation (llama3.2:1b) -- prompt_chars=9052 time=1.126s total_duration=1.124s load_duration=0.014s prompt_tokens=1798 output_tokens=139 eval_duration=0.897s
+ANSWER: The authors highlight several key advantages of their Transformer approach over older models based on recurrent and convolutional layers, including:
+
+1. Reduced computational complexity, making it faster to train and use, especially for long sequences.
+2. Improved parallelization, enabling faster training and computation.
+3. Increased interpretability, as attention distributions from models can reveal more about the underlying structure of the input and output sequences.
+4. Potential for more generalizability to other tasks, as the Transformer can adapt to different input modalities (e.g., images, audio, video) and structures.
+5. Ability to replace sequence-aligned RNNs and convolution with a simpler and more efficient self-attention mechanism.
+
+-- ollama ps before -> after --
+   before: [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+   after:  [{'model': 'llama3.2:1b', 'size_vram_gb': 1.51, 'context_length': 4096}, {'model': 'nomic-embed-text:latest', 'size_vram_gb': 0.32, 'context_length': 2048}, {'model': 'gemma3:4b', 'size_vram_gb': 2.88, 'context_length': 4096}]
+total_wall_time_s=1.173
+
+==========================================================================================
+Retrieval hit rate: 11/15 (73%)
+  MISS: expected 'Table 3' for: If you cut the model down to just a single attention head instead of t...
+  MISS: expected 'Figure 4' for: One of the attention figures seems to be about a word referring back t...
+  MISS: expected '3.5' for: Since the Transformer has no recurrence or convolution at all, how doe...
+  MISS: expected 'Conclusion' for: In the conclusion, what do the authors say are the main advantages of ...
+Wrote data/processed/eval_trace.json

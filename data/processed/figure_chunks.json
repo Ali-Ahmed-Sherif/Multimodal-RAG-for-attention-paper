@@ -1,0 +1,49 @@
+[
+  {
+    "id": "Figure 1",
+    "title": "Figure 1",
+    "page_start": 3,
+    "modality": "figure_diagram",
+    "word_count": 374,
+    "text": "Figure 1: The Transformer - model architecture.\n\nStructural description (gemma3:4b): Here\u2019s a structural description of the architecture diagram from the \"Attention Is All You Need\" paper:\n\nThe architecture consists of multiple identical blocks stacked vertically, labeled \"Nx\" where \u2018N\u2019 represents the number of blocks. Each block is essentially a standard Transformer encoder block.\n\nHere\u2019s a breakdown of the components within each block and how they\u2019re connected:\n\n1. **Input Embedding:** The input to each block starts with an \u201cInput Embedding\u201d component. This takes the input sequence (of length Nx) and converts each element of that sequence into a dense vector representation.\n\n2. **Positional Encoding:** This output from the input embedding is then combined with a \u201cPositional Encoding\u201d. Positional encoding adds information about the position of each element in the sequence, allowing the model to understand the order of the input.\n\n3. **Add & Norm (Feed Forward):** The combined input (from both input embedding and positional encoding) then passes through an \u201cAdd & Norm (Feed Forward)\u201d block. This block performs a residual connection (adds the original input to the output of the previous layer) and then applies layer normalization to stabilize training.\n\n4. **Multi-Head Attention:** The output of the \u201cAdd & Norm (Feed Forward)\u201d block is then fed into a \"Multi-Head Attention\" block. This is a core component of the Transformer, allowing the model to attend to different parts of the input sequence when processing each element. The output of the multi-head attention is then passed through another \"Add & Norm (Feed Forward)\" block.\n\n5. **Output Embedding:** After the Multi-Head Attention block, the output is then passed through an \u201cOutput Embedding\u201d component. This component performs a similar operation to the Input Embedding but on the output of the attention layer.\n\n6. **Linear and Softmax:** Finally, the output of the last stacked block (Nx) is fed through a \"Linear\" layer, which performs a linear transformation of the output. This output is then passed through a \"Softmax\" layer, which converts the linear output into a probability distribution over the output vocabulary.\n\nThe flow of data is top-to-bottom, with each block receiving input from the previous block, and the final output being processed through the linear and softmax layers. Arrows in the diagram indicate the direction of data flow.",
+    "image_path": "data/processed/images/figure1.png",
+    "vlm_description_pending": false
+  },
+  {
+    "id": "Figure 2",
+    "title": "Figure 2",
+    "page_start": 4,
+    "modality": "figure_diagram",
+    "word_count": 494,
+    "text": "Figure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel.\n\nStructural description (gemma3:4b): Here's a structural description of the architecture diagram for Scaled Dot-Product Attention and Multi-Head Attention, as depicted in the \u201cAttention Is All You Need\u201d paper:\n\n**Overall Structure:**\n\nThe diagram illustrates two attention mechanisms: Scaled Dot-Product Attention and Multi-Head Attention. Both mechanisms build upon linear transformations (represented as \u201cLinear\u201d boxes) to project the input vectors into query (Q), key (K), and value (V) spaces.\n\n**1. Scaled Dot-Product Attention:**\n\n*   **Inputs:** The block receives three inputs: Q (Query), K (Key), and V (Value). All these inputs are represented as vectors of size \"h\".\n*   **Linear Layers:** Three \"Linear\" blocks are applied to Q, K, and V, each projecting the input vectors to the same \"h\" dimension.\n*   **MatMul (Matrix Multiplication):** The outputs of the three linear layers are then multiplied together using a matrix multiplication (MatMul) operation. This results in a matrix where each element represents the dot product of a query vector with a key vector.\n*   **Scale:** The result of the MatMul operation is then scaled down by a factor of 1/sqrt(h). This scaling helps stabilize training.\n*   **SoftMax:** The scaled result is passed through a SoftMax function. This normalizes the scores obtained from the dot product, turning them into probabilities.\n*   **Mask:** The SoftMax output is optionally masked. Masking is used to prevent attention from attending to certain positions (e.g., padding tokens).\n*   **Output:** The output of the Scaled Dot-Product Attention block is a weighted sum of the value vectors, where the weights are determined by the SoftMax probabilities. The output has a size of \"h\".\n\n**2. Multi-Head Attention:**\n\n*   **Inputs:** This block receives the same Q, K, and V inputs as the Scaled Dot-Product Attention block, all of size \"h\".\n*   **Linear Layers (Nx):** The block contains *Nx* (where *N* is a specified number, likely 8 in this case) stacked \"Linear\" layers. Each linear layer projects the Q, K, and V vectors to a lower dimension (denoted as *h*). This creates multiple independent Q, K, and V projections.\n*   **Scaled Dot-Product Attention (Nx):** The *Nx* outputs of the linear layers are then processed through *Nx* copies of the Scaled Dot-Product Attention block. Each of these attention blocks operates on a different set of projected Q, K, and V vectors.\n*   **Concatenate:** The outputs of all *Nx* Scaled Dot-Product Attention blocks are concatenated together.\n*   **Linear Layer:** The concatenated output is then passed through one final \u201cLinear\u201d layer to project the result back to the original dimension \"h\".\n*   **Output:** The output of the Multi-Head Attention block has a size of \"h\".\n\n**Connections & Flow:**\n\nThe diagram depicts a top-to-bottom flow, with data flowing from the inputs through the linear layers, attention mechanisms, and finally to the output. Within Multi-Head Attention, the data flows through multiple stacked attention blocks and linear layers. Arrows clearly show the data flow and dependencies between the blocks.",
+    "image_path": "data/processed/images/figure2.png",
+    "vlm_description_pending": false
+  },
+  {
+    "id": "Figure 3",
+    "title": "Figure 3",
+    "page_start": 13,
+    "modality": "figure_attnviz",
+    "word_count": 56,
+    "text": "Figure 3: An example of the attention mechanism following long-distance dependencies in the encoder self-attention in layer 5 of 6. Many of the attention heads attend to a distant dependency of the verb \u2018making\u2019, completing the phrase \u2018making...more difficult\u2019. Attentions here shown only for the word \u2018making\u2019. Different colors represent different heads. Best viewed in color.",
+    "image_path": "data/processed/images/figure3.png"
+  },
+  {
+    "id": "Figure 4",
+    "title": "Figure 4",
+    "page_start": 14,
+    "modality": "figure_attnviz",
+    "word_count": 46,
+    "text": "Figure 4: Two attention heads, also in layer 5 of 6, apparently involved in anaphora resolution. Top: Full attentions for head 5. Bottom: Isolated attentions from just the word \u2018its\u2019 for attention heads 5 and 6. Note that the attentions are very sharp for this word.",
+    "image_path": "data/processed/images/figure4.png"
+  },
+  {
+    "id": "Figure 5",
+    "title": "Figure 5",
+    "page_start": 15,
+    "modality": "figure_attnviz",
+    "word_count": 45,
+    "text": "Figure 5: Many of the attention heads exhibit behaviour that seems related to the structure of the sentence. We give two such examples above, from two different heads from the encoder self-attention at layer 5 of 6. The heads clearly learned to perform different tasks.",
+    "image_path": "data/processed/images/figure5.png"
+  }
+]
